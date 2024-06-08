@@ -38,6 +38,7 @@ const createUser = asyncHandler(async (req, res) => {
       username: userNew.username,
       email: userNew.email,
       password: userNew.password,
+      role: userNew.role,
     });
   } else {
     res.status(400);
@@ -64,6 +65,7 @@ const loginUser = asyncHandler(async (req, res) => {
         _id: checkAccountEmail._id,
         username: checkAccountEmail.username,
         email: checkAccountEmail.email,
+        role: checkAccountEmail.role,
       });
     } else {
       res.status(400);
@@ -82,6 +84,7 @@ const loginUser = asyncHandler(async (req, res) => {
         _id: checkAccountUsername._id,
         username: checkAccountUsername.username,
         email: checkAccountUsername.email,
+        role: checkAccountUsername.role,
       });
     } else {
       res.status(400);
@@ -115,15 +118,23 @@ const profileUser = asyncHandler(async (req, res) => {
 
 const updateProfileUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
-  const { username, email, password, full_name, phone_number, image } =
-    req.body;
+  const {
+    username,
+    email,
+    password,
+    full_name,
+    phone_number,
+    user_image,
+    role,
+  } = req.body;
 
   if (user) {
-    user.username = username || username.username;
-    user.email = email || username.email;
-    user.full_name = full_name || username.full_name;
-    user.phone_number = phone_number || username.phone_number;
-    user.image = image || username.image;
+    user.username = username || user.username;
+    user.email = email || user.email;
+    user.full_name = full_name || user.full_name;
+    user.phone_number = phone_number || user.phone_number;
+    user.user_image = user_image || user.user_image;
+    user.role = role || user.role;
 
     if (password) {
       const salt = await bcryptjs.genSalt(10);
@@ -156,10 +167,46 @@ const updateAddressUser = asyncHandler(async (req, res) => {
     user.address.country = country || user.address.country;
 
     const updateAddress = await user.save();
-    res.status(200).json(user);
+    res.status(200).json(updateAddress);
   } else {
     res.status(200).json({ hello: "hello" });
   }
+});
+
+const getAllUsers = asyncHandler(async (req, res) => {
+  const user = await User.find({});
+  res.status(200).json(user);
+});
+
+const deleteUserById = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const deleteUser = await User.findByIdAndDelete(id);
+
+  res.status(200).json(deleteUser);
+});
+
+const deleteUserHasCheck = asyncHandler(async (req, res) => {
+  const { ids } = req.body;
+
+  if (!ids || !Array.isArray(ids)) {
+    res.status(400);
+    throw new Error("Invalid request: ids should be an array");
+  }
+
+  // Delete all users with IDs in the provided array
+  const deleteResult = await User.deleteMany({ _id: { $in: ids } });
+
+  if (deleteResult.deletedCount === 0) {
+    res.status(404);
+    throw new Error("No users found with the provided IDs");
+  }
+
+  res
+    .status(200)
+    .json({
+      message: "Users deleted successfully",
+      deletedCount: deleteResult.deletedCount,
+    });
 });
 
 export {
@@ -169,4 +216,7 @@ export {
   profileUser,
   updateProfileUser,
   updateAddressUser,
+  getAllUsers,
+  deleteUserById,
+  deleteUserHasCheck,
 };

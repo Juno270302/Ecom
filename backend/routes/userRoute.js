@@ -6,12 +6,21 @@ import {
   logoutUser,
   updateProfileUser,
   updateAddressUser,
+  getAllUsers,
+  deleteUserById,
+  deleteUserHasCheck,
 } from "../controllers/userController.js";
-import { checkUserAuthenticate } from "../middlewares/authMiddleware.js";
+import {
+  checkAdminAuthenticate,
+  checkUserAuthenticate,
+} from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.route("/").post(createUser);
+router
+  .route("/")
+  .post(createUser)
+  .get(checkUserAuthenticate, checkAdminAuthenticate, getAllUsers);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 
@@ -22,4 +31,12 @@ router
 
 router.route("/profile/address").put(checkUserAuthenticate, updateAddressUser);
 
+//admin
+router
+  .route("/:id")
+  .delete(checkUserAuthenticate, checkAdminAuthenticate, deleteUserById);
+
+router
+  .route("/delete")
+  .post(checkUserAuthenticate, checkAdminAuthenticate, deleteUserHasCheck);
 export default router;

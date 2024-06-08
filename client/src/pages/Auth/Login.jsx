@@ -26,7 +26,7 @@ const Login = () => {
     if (_id) {
       navigate("/");
     }
-  },[navigate, _id]);
+  }, [navigate, _id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +45,8 @@ const Login = () => {
         username: account,
         password,
       }).unwrap();
-      dispatch(setCredentials({ _id: res._id }));
+      console.log(res);
+      dispatch(setCredentials({ _id: res._id, role: res.role }));
       toast.success("Login Success");
       console.log(res);
     } catch (error) {
@@ -117,7 +118,7 @@ const Login = () => {
                 </button>
               </div>
               <div>
-                <Link to={"/register"}>
+                <Link to={"/registerUser"}>
                   <button className="w-full h-[40px] border border-gray-250 rounded-lg ">
                     Create an Account
                   </button>

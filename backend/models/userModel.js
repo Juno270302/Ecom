@@ -14,7 +14,7 @@ const userSchema = mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, require: true, default: "user" },
-    user_image: { type: String, require: true, default: "/image.png" },
+    user_image: { type: String, require: true, default: "/uploads\\image.png" },
     full_name: String,
     phone_number: String,
     address: addressSchema,

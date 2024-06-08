@@ -9,6 +9,8 @@ import path from "path";
 //import Routes
 import userRoutes from "./routes/userRoute.js";
 import uploadRoutes from "./routes/uploadRoute.js";
+import categoryRoutes from "./routes/categoryRoute.js";
+import productRoutes from "./routes/productRoute.js";
 
 dotenv.config();
 
@@ -22,6 +24,8 @@ app.use(cookieParser());
 
 //Router
 app.use("/api/users", userRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/products", productRoutes);
 
 //Upload Image
 app.use("/api/upload", uploadRoutes);
@@ -29,12 +33,12 @@ app.use("/api/upload", uploadRoutes);
 //Mongoose
 connectDB();
 
+const __dirname = path.resolve();
+app.use("/uploads", express.static(path.join(__dirname + "/uploads")));
+
 //Error
 app.use(notFound);
 app.use(errorHandler);
-
-const __dirname = path.resolve();
-app.use("/uploads", express.static(path.join(__dirname + "/uploads")));
 
 app.listen(process.env.PORT, () =>
   console.log(`Server đang mở ở port ${process.env.PORT}`)
